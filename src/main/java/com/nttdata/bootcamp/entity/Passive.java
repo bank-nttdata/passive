@@ -20,6 +20,7 @@ import java.util.Date;
 public class Passive {
     @Id
     private String id;
+    private String ruc;
     private String dni;
     private String typeCustomer;
     private Boolean flagVip;
@@ -35,6 +36,7 @@ public class Passive {
     private Number commissionTransaction;
     private Boolean dailyAverage;
     private String status;
+    private Boolean firmante;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @CreatedDate

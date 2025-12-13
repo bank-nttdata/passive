@@ -81,9 +81,9 @@ public class SavingAccountServiceImpl implements SavingAccountService {
                         : Mono.empty();
 
         return existing
-                .flatMap(__ -> Mono.<Passive>error(
-                        new RuntimeException("The customer with DNI " +
-                                dataSavingAccount.getDni() + " already has a Saving Account")))
+                .flatMap(x -> Mono.<Passive>error(
+                        new RuntimeException("El cliente con DNI " +
+                                dataSavingAccount.getDni() + " ya tiene una cuenta de ahorros")))
                 .switchIfEmpty(passiveRepository.save(dataSavingAccount));
     }
 

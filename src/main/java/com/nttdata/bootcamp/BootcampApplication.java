@@ -8,13 +8,10 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
 @EnableEurekaClient
-@OpenAPIDefinition(info =
-	@Info(title = "Passive API", version = "1.0", description = "Documentation Passive API v1.0")
-)
+@OpenAPIDefinition(info = @Info(title = "Passive API", version = "1.0", description = "Documentation Passive API v1.0"))
 public class BootcampApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BootcampApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(BootcampApplication.class, args);
+    }
 }

@@ -39,10 +39,142 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
     }
 
     // --- SAVE ---
-    @Override
-    public Mono<Passive> saveCurrentAccount(Passive dataCurrentAccount, Boolean creditCard) {
+//    @Override
+//    public Mono<Passive> saveCurrentAccount(Passive dataCurrentAccount, Boolean creditCard) {
+//
+//        // configurar campos base
+//        dataCurrentAccount.setFlagVip(false);
+//        dataCurrentAccount.setMovementsMonthly(false);
+//        dataCurrentAccount.setLimitMovementsMonthly(0);
+//        dataCurrentAccount.setSaving(false);
+//        dataCurrentAccount.setCurrentAccount(true);
+//        dataCurrentAccount.setFixedTerm(false);
+//
+//        if (creditCard) {
+//            dataCurrentAccount.setFreeCommission(true);
+//            dataCurrentAccount.setCommissionMaintenance(0);
+//            dataCurrentAccount.setFlagPyme(true);
+//        } else {
+//            dataCurrentAccount.setFreeCommission(false);
+//            dataCurrentAccount.setCommissionMaintenance(1);
+//            dataCurrentAccount.setFlagPyme(false);
+//        }
+//
+//        Mono<Passive> validationMono =
+//                dataCurrentAccount.getTypeCustomer().equals(Constant.PERSONAL_CUSTOMER)
+//                        ? passiveService.searchByCurrentCustomer(dataCurrentAccount)
+//                        : Mono.empty();
+//
+//        return validationMono
+//                .flatMap(__ -> Mono.<Passive>error(
+//                        new RuntimeException("The customer with DNI "
+//                                + dataCurrentAccount.getDni()
+//                                + " already has an account")))
+//                .switchIfEmpty(passiveRepository.save(dataCurrentAccount));
+//    }
 
-        // configurar campos base
+    //OK
+//    @Override
+//    public Mono<Passive> saveCurrentAccount(Passive dataCurrentAccount, Boolean creditCard) {
+//
+//        // Configuración base
+//        dataCurrentAccount.setFlagVip(false);
+//        dataCurrentAccount.setMovementsMonthly(false);
+//        dataCurrentAccount.setLimitMovementsMonthly(0);
+//        dataCurrentAccount.setSaving(false);
+//        dataCurrentAccount.setCurrentAccount(true);
+//        dataCurrentAccount.setFixedTerm(false);
+//
+//        if (creditCard) {
+//            dataCurrentAccount.setFreeCommission(true);
+//            dataCurrentAccount.setCommissionMaintenance(0);
+//            dataCurrentAccount.setFlagPyme(true);
+//        } else {
+//            dataCurrentAccount.setFreeCommission(false);
+//            dataCurrentAccount.setCommissionMaintenance(1);
+//            dataCurrentAccount.setFlagPyme(false);
+//        }
+//
+//        Mono<Passive> validationMono =
+//                Constant.PERSONAL_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())
+//                        ? passiveService.searchByCurrentCustomer(dataCurrentAccount)
+//                        : passiveRepository.findByAccountNumber(dataCurrentAccount.getAccountNumber());
+//
+//        return validationMono
+//                .flatMap(__ -> Mono.<Passive>error(new RuntimeException(
+//                        Constant.PERSONAL_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())
+//                                ? "The customer with DNI " + dataCurrentAccount.getDni() + " already has an account"
+//                                : "The account number " + dataCurrentAccount.getAccountNumber() + " already exists"
+//                )))
+//                .switchIfEmpty(passiveRepository.save(dataCurrentAccount));
+//
+//    }
+
+//    @Override
+//    public Mono<Passive> saveCurrentAccount(Passive dataCurrentAccount, Boolean creditCard) {
+//
+//        // 🔒 Regla 1: Cliente EMPRESARIAL solo puede tener CUENTA CORRIENTE
+//        if (Constant.BUSINESS_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())) {
+//
+//            if (Boolean.TRUE.equals(dataCurrentAccount.getSaving())
+//                    || Boolean.TRUE.equals(dataCurrentAccount.getFixedTerm())) {
+//                return Mono.error(new RuntimeException(
+//                        "Business customers can only have current accounts"));
+//            }
+//        }
+//
+//        // Configuración base de cuenta corriente
+//        dataCurrentAccount.setFlagVip(false);
+//        dataCurrentAccount.setMovementsMonthly(false);
+//        dataCurrentAccount.setLimitMovementsMonthly(0);
+//        dataCurrentAccount.setSaving(false);
+//        dataCurrentAccount.setCurrentAccount(true);
+//        dataCurrentAccount.setFixedTerm(false);
+//
+//        // Configuración por tarjeta de crédito
+//        if (creditCard) {
+//            dataCurrentAccount.setFreeCommission(true);
+//            dataCurrentAccount.setCommissionMaintenance(0);
+//            dataCurrentAccount.setFlagPyme(true);
+//        } else {
+//            dataCurrentAccount.setFreeCommission(false);
+//            dataCurrentAccount.setCommissionMaintenance(1);
+//            dataCurrentAccount.setFlagPyme(false);
+//        }
+//
+//        // 🔍 Validaciones según tipo de cliente
+//        Mono<Passive> validationMono =
+//                Constant.PERSONAL_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())
+//                        // PERSONAL: solo una cuenta corriente
+//                        ? passiveService.searchByCurrentCustomer(dataCurrentAccount)
+//                        // EMPRESARIAL: validar solo número de cuenta
+//                        : passiveRepository.findByAccountNumber(dataCurrentAccount.getAccountNumber());
+//
+//        return validationMono
+//                .flatMap(__ -> Mono.<Passive>error(new RuntimeException(
+//                        Constant.PERSONAL_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())
+//                                ? "The customer with DNI " + dataCurrentAccount.getDni()
+//                                + " already has a current account"
+//                                : "The account number " + dataCurrentAccount.getAccountNumber()
+//                                + " already exists"
+//                )))
+//                .switchIfEmpty(passiveRepository.save(dataCurrentAccount));
+//    }
+
+    @Override
+    public Mono<Passive> saveCurrentAccount(Passive dataCurrentAccount,
+                                            Boolean creditCard) {
+
+        // 🔒 Regla 1: Cliente EMPRESARIAL solo puede tener CUENTA CORRIENTE
+        if (Constant.BUSINESS_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())) {
+            if (Boolean.TRUE.equals(dataCurrentAccount.getSaving())
+                    || Boolean.TRUE.equals(dataCurrentAccount.getFixedTerm())) {
+                return Mono.error(new RuntimeException(
+                        "Business customers can only have current accounts"));
+            }
+        }
+
+        // Configuración base
         dataCurrentAccount.setFlagVip(false);
         dataCurrentAccount.setMovementsMonthly(false);
         dataCurrentAccount.setLimitMovementsMonthly(0);
@@ -60,18 +192,29 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
             dataCurrentAccount.setFlagPyme(false);
         }
 
+        // 🔍 Validaciones CORRECTAS
         Mono<Passive> validationMono =
-                dataCurrentAccount.getTypeCustomer().equals(Constant.PERSONAL_CUSTOMER)
+                Constant.PERSONAL_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())
+                        // PERSONAL: una sola cuenta por DNI
                         ? passiveService.searchByCurrentCustomer(dataCurrentAccount)
-                        : Mono.empty();
+                        // EMPRESARIAL: NO repetir mismo DNI en la misma cuenta
+                        : passiveRepository.findByAccountNumberAndDni(
+                        dataCurrentAccount.getAccountNumber(),
+                        dataCurrentAccount.getDni()
+                );
 
         return validationMono
-                .flatMap(__ -> Mono.<Passive>error(
-                        new RuntimeException("The customer with DNI "
-                                + dataCurrentAccount.getDni()
-                                + " already has an account")))
+                .flatMap(__ -> Mono.<Passive>error(new RuntimeException(
+                        Constant.PERSONAL_CUSTOMER.equals(dataCurrentAccount.getTypeCustomer())
+                                ? "The customer with DNI " + dataCurrentAccount.getDni()
+                                + " already has a current account"
+                                : "The DNI " + dataCurrentAccount.getDni()
+                                + " is already registered for this account"
+                )))
                 .switchIfEmpty(passiveRepository.save(dataCurrentAccount));
     }
+
+
 
     // --- UPDATE ---
     @Override

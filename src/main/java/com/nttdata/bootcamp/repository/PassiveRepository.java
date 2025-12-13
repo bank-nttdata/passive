@@ -11,4 +11,7 @@ public interface PassiveRepository extends ReactiveCrudRepository<Passive, Strin
     Flux<Passive> findByDniAndCurrentAccountTrue(String dni);
 
     Mono<Passive> findByAccountNumberAndCurrentAccountTrue(String accountNumber);
+
+    Mono<Passive> findByAccountNumberAndDni(String accountNumber, String dni);
+
 }

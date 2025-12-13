@@ -199,6 +199,26 @@
 					</execution>
 				</executions>
 			</plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>3.1.0</version> <!-- Puedes usar la última versión disponible -->
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>check</goal> <!-- Goal para ejecutar el chequeo de estilo -->
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <configLocation>google_checks.xml</configLocation> <!-- Especifica el archivo de configuración -->
+                            <encoding>UTF-8</encoding> <!-- Codificación de los archivos -->
+                            <consoleOutput>true</consoleOutput> <!-- Salida en consola -->
+                        </configuration>
+                    </plugin>
+
+
 		</plugins>
 	</build>
 

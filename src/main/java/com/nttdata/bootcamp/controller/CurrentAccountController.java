@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 import javax.validation.Valid;
 import java.util.Date;
 
@@ -21,7 +22,8 @@ import java.util.Date;
 @CrossOrigin("*")
 public class CurrentAccountController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CurrentAccountController.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(CurrentAccountController.class);
 
     @Autowired
     private CurrentAccountService currentAccountService;
@@ -31,7 +33,8 @@ public class CurrentAccountController {
     @GetMapping("/findAllCurrentAccounts")
     public Flux<Passive> findAllCurrentAccounts() {
         return currentAccountService.findAllCurrentAccount()
-                .doOnSubscribe(s -> LOGGER.info("Listing all current accounts"));
+                .doOnSubscribe(s ->
+                        LOGGER.info("Listing all current accounts"));
     }
 
     // --- FIND BY DNI ---
@@ -39,13 +42,15 @@ public class CurrentAccountController {
     @GetMapping("/findCurrentAccountByDni/{dni}")
     public Flux<Passive> findCurrentAccountByDni(@PathVariable String dni) {
         return currentAccountService.findCurrentAccountByCustomer(dni)
-                .doOnSubscribe(s -> LOGGER.info("Listing current accounts for dni {}", dni));
+                .doOnSubscribe(s ->
+                        LOGGER.info("Listing current accounts for dni {}", dni));
     }
 
     // --- FIND BY ACCOUNT NUMBER ---
     //Search Current Account by AccountNumber
     @GetMapping("/findCurrentAccountByAccountNumber/{accountNumber}")
-    public Mono<Passive> findCurrentAccountByAccountNumber(@PathVariable String accountNumber) {
+    public Mono<Passive> findCurrentAccountByAccountNumber(
+            @PathVariable String accountNumber) {
         LOGGER.info("Searching current account {}", accountNumber);
         return currentAccountService.findCurrentAccountByAccountNumber(accountNumber);
     }
@@ -65,33 +70,36 @@ public class CurrentAccountController {
                     p.setCreationDate(new Date());
                     p.setModificationDate(new Date());
                     return p;
-                })
-                .doOnNext(p -> LOGGER.info("Saving personal current account {}", p))
-                .flatMap(p -> currentAccountService.saveCurrentAccount(p, false));
+                }).doOnNext(p ->
+                        LOGGER.info("Saving personal current account {}", p)).
+                flatMap(p ->
+                        currentAccountService.saveCurrentAccount(p, false));
     }
 
     // --- SAVE BUSINESS ---
-    //Save Current Account Business
+    // Save Current Account Business
     @PostMapping("/saveCurrentAccountBusiness/{flagCreditCard}")
     public Mono<Passive> saveCurrentAccountBusiness(
             @RequestBody CurrentAccountDto account,
             @PathVariable Boolean flagCreditCard) {
 
-        return Mono.fromSupplier(() -> {
-                    Passive p = new Passive();
-                    p.setDni(account.getDni());
-                    p.setTypeCustomer(Constant.BUSINESS_CUSTOMER);
-                    p.setAccountNumber(account.getAccountNumber());
-                    p.setCommissionMaintenance(account.getCommissionMaintenance());
-                    p.setCommissionTransaction(account.getCommissionTransaction());
-                    p.setStatus(Constant.PASSIVE_ACTIVE);
-                    p.setCreationDate(new Date());
-                    p.setModificationDate(new Date());
-                    return p;
-                })
-                .doOnNext(p -> LOGGER.info("Saving business current account {}", p))
-                .flatMap(p -> currentAccountService.saveCurrentAccount(p, flagCreditCard));
+        Passive p = new Passive();
+        p.setRuc(account.getRuc());
+        p.setDni(account.getDni());// representante
+        p.setTypeCustomer(Constant.BUSINESS_CUSTOMER);
+        p.setAccountNumber(account.getAccountNumber());
+        p.setCommissionMaintenance(account.getCommissionMaintenance());
+        p.setCommissionTransaction(account.getCommissionTransaction());
+        p.setStatus(Constant.PASSIVE_ACTIVE);
+        p.setFirmante(account.getFirmante());
+        p.setCreationDate(new Date());
+        p.setModificationDate(new Date());
+
+        LOGGER.info("Saving business current account [accountNumber={}]", p.getAccountNumber());
+
+        return currentAccountService.saveCurrentAccount(p, flagCreditCard);
     }
+
 
     // --- UPDATE ---
     //Update Current Account
@@ -103,13 +111,11 @@ public class CurrentAccountController {
         return currentAccountService.findCurrentAccountByAccountNumber(accountNumber)
                 .switchIfEmpty(Mono.error(new RuntimeException("Account does not exist")))
                 .flatMap(existing -> {
-
                     existing.setCommissionMaintenance(account.getCommissionMaintenance());
                     existing.setModificationDate(new Date());
 
                     return currentAccountService.updateCurrentAccount(existing);
-                })
-                .doOnNext(p -> LOGGER.info("Updated current account {}", p));
+                }).doOnNext(p -> LOGGER.info("Updated current account {}", p));
     }
 
     // --- DELETE ---

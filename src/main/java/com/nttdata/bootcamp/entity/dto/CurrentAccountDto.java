@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CurrentAccountDto {
+    private String ruc;
     private String dni;
     private String accountNumber;
     private Number commissionMaintenance;
     private Number commissionTransaction;
+    private Boolean firmante;
 }
