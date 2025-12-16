@@ -38,7 +38,6 @@ public class KafkaServiceImpl implements KafkaService {
                     if (event instanceof CreatedEventKafka) {
 
                         CreatedEventKafka createdEvent = (CreatedEventKafka) event;
-
                         log.info("Received CREATED event → id={}, data={}",
                                 createdEvent.getId(),
                                 createdEvent.getData());

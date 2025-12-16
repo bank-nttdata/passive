@@ -55,8 +55,6 @@ public class FixedTermServiceImpl implements FixedTermService {
     // -------------------------------------------------------------------------
     @Override
     public Mono<Passive> saveFixedTerm(Passive dataFixedTerm) {
-
-        // Valores por defecto para Fixed Term
         dataFixedTerm.setFreeCommission(true);
         dataFixedTerm.setCommissionMaintenance(0);
         dataFixedTerm.setMovementsMonthly(true);
@@ -81,7 +79,6 @@ public class FixedTermServiceImpl implements FixedTermService {
                 ))
                 .switchIfEmpty(passiveRepository.save(dataFixedTerm));
     }
-
 
     // -------------------------------------------------------------------------
     // UPDATE

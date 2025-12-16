@@ -55,8 +55,6 @@ public class SavingAccountServiceImpl implements SavingAccountService {
     // -------------------------------------------------------------------------
     @Override
     public Mono<Passive> saveSavingAccount(Passive dataSavingAccount, Boolean creditCard) {
-
-        // Valores por defecto Saving
         dataSavingAccount.setFreeCommission(true);
         dataSavingAccount.setCommissionMaintenance(0);
         dataSavingAccount.setMovementsMonthly(true);
@@ -65,7 +63,6 @@ public class SavingAccountServiceImpl implements SavingAccountService {
         dataSavingAccount.setFixedTerm(false);
         dataSavingAccount.setFlagPyme(false);
 
-        // Tratamiento si llegó con tarjeta
         if (creditCard) {
             dataSavingAccount.setDailyAverage(true);
             dataSavingAccount.setFlagVip(true);
@@ -74,7 +71,6 @@ public class SavingAccountServiceImpl implements SavingAccountService {
             dataSavingAccount.setFlagVip(false);
         }
 
-        // Validación → Solo clientes PERSONALES deben tener 1 sola cuenta saving
         Mono<Passive> existing =
                 dataSavingAccount.getTypeCustomer().equals(Constant.PERSONAL_CUSTOMER)
                         ? passiveService.searchBySavingCustomer(dataSavingAccount)
